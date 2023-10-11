@@ -1,4 +1,5 @@
 "use client"
+import axios from 'axios'
 
 import React, { useState } from 'react'
 import toast from 'react-hot-toast'
@@ -8,28 +9,23 @@ export default function ContactForm() {
     const [email, setEmail] = useState("")
     const [message, setMessage] = useState("")
 
-
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
+        event.preventDefault();
 
-        const res = await fetch('api/contact', {
-            method: "POST",
-            headers: {
-                "Context-type": "application/json"
-            },
-            body: JSON.stringify({
-                fullname, email, message
-            })
-        })
+        (async () => {
+            try {
+                await axios
+                    .post('api/contact', { fullname, email, message })
+                    .then((response) => {
+                        const { msg, success } = response.data
+                        success ? toast.success("Email sent succesfully!") : msg.map((e: string) => { toast.error(e) })
+                        if (success) { setFullname(""), setEmail(""), setMessage("") }
+                    })
 
-        const { msg, success } = await res.json()
-
-        if (success) {
-            setFullname("")
-            setEmail("")
-            setMessage("")
-        }
-        success ? toast.success("Email sent succesfully!") : msg.map((e:string) => {toast.error(e)})
+            } catch (error) {
+                console.log(error);
+            }
+        })()
     }
 
     return (
