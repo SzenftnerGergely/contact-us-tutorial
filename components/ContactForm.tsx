@@ -7,8 +7,7 @@ export default function ContactForm() {
     const [fullname, setFullname] = useState("")
     const [email, setEmail] = useState("")
     const [message, setMessage] = useState("")
-    const [error, setError] = useState([])
-    const [success, setSuccess] = useState(false)
+
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -24,15 +23,13 @@ export default function ContactForm() {
         })
 
         const { msg, success } = await res.json()
-        setError(msg)
-        setSuccess(success)
 
         if (success) {
             setFullname("")
             setEmail("")
             setMessage("")
-            toast.success('Your message is sent!')
         }
+        success ? toast.success("Email sent succesfully!") : msg.map((e:string) => {toast.error(e)})
     }
 
     return (
@@ -78,13 +75,6 @@ export default function ContactForm() {
 
                 <button type='submit' className='bg-green-700 p-3 text-white font-bold rounded-lg'>Send</button>
             </form>
-            <div className='bg-slate-100 flex flex-col'>
-                {
-                    error && error.map((e) => (
-                        toast.error(e)
-                    ))
-                }
-            </div>
         </>
     )
 }
